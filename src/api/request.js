@@ -31,7 +31,7 @@ const service = axios.create({ // api 的 base_url
 service.interceptors.response.use(
   response => {
     /**
-     * code为非20000是抛错 可结合自己业务进行修改
+     * code为非200是抛错 可结合自己业务进行修改
      */
     const res = response.data
     console.log(response)
@@ -42,7 +42,7 @@ service.interceptors.response.use(
         duration: 5 * 1000
       })
 
-      // 50008:非法的token; 50012:其他客户端登录了;  50014:Token 过期了;
+      // 10006: 过期了;
       if (res.code==10006) {
         MessageBox.confirm(
           '你已被登出，可以取消继续留在该页面，或者重新登录',
