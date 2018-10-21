@@ -1,0 +1,368 @@
+<template>
+    <div class="table">
+        <div class="crumbs">
+            <el-breadcrumb separator="/">
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 设备表格</el-breadcrumb-item>
+            </el-breadcrumb>
+        </div>
+        <div class="container">
+            <div class="handle-box">
+                
+                <el-button type='primary' @click='addDevice'>添加设备</el-button>
+            </div>
+            <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+                <el-table-column type="selection" width="55" align="center"></el-table-column>
+                
+                <el-table-column prop="title" label="title" width="100">
+                </el-table-column>
+                <el-table-column prop="name" label="name" width="100">
+                </el-table-column>
+                
+                <el-table-column prop="description" label="简介">
+                </el-table-column>
+                <el-table-column prop="update" label="更新日期" sortable width="160">
+                </el-table-column>
+                <el-table-column prop="secretKey" label="secretKey" width="200">
+                </el-table-column>
+                
+                <el-table-column label="操作" width="180" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        <el-button type="text"  @click="handleCopy(scope.$index, scope.row)"> <i class="el-icon-lx-copy"></i> 克隆</el-button>
+                        <el-button type="text"  @click="handleAdd(scope.$index, scope.row)"> <i class="el-icon-lx-add"></i> 添加预设</el-button>
+                        <el-button type="text"  @click="lookCommand(scope.$index, scope.row)"> <i class="el-icon-lx-attention"></i> 查看预设</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total=pageCount>
+                </el-pagination>
+            </div>
+        </div>
+
+        <!-- 编辑弹出框 -->
+        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
+            <el-form ref="form" :model="form" label-width="50px">
+                <el-form-item label="name">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="title">
+                    <el-input v-model="form.title"></el-input>
+                </el-form-item>
+                <el-form-item label="密码">
+                    <el-input v-model="form.password"></el-input>
+                </el-form-item>
+                <el-form-item label="简介">
+                    <el-input v-model="form.description"></el-input>
+                </el-form-item>
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="editVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveEdit">确 定</el-button>
+            </span>
+        </el-dialog>
+        <!-- 添加弹出框 -->
+        <el-dialog title="添加" :visible.sync="addVisible" width="30%">
+            <el-form ref="addForm" :model="addForm" label-width="50px">
+                <el-form-item label="name">
+                    <el-input v-model="addForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="密码">
+                    <el-input v-model="addForm.password"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="addVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveAdd">确 定</el-button>
+            </span>
+        </el-dialog>
+        <!-- 删除提示框 -->
+        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="delVisible = false">取 消</el-button>
+                <el-button type="primary" @click="deleteRow">确 定</el-button>
+            </span>
+        </el-dialog>
+        <!-- 添加预设 -->
+        <el-dialog title="添加预设命令" :visible.sync="commandShow" width="30%">
+            <el-form ref="addCommand" :model="addCommand" label-width="70px">
+                <el-form-item label="标题">
+                    <el-input v-model="addCommand.title"></el-input>
+                </el-form-item>
+                <el-form-item label="命令">
+                    <el-input v-model="addCommand.command"></el-input>
+                </el-form-item>
+                <el-form-item label="简介">
+                    <el-input v-model="addCommand.description"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="commandShow = false">取 消</el-button>
+                <el-button type="primary" @click="saveCommand">确 定</el-button>
+            </span>
+        </el-dialog>
+        <!-- 查看预设 -->
+         <el-dialog title="查看预设" :visible.sync="commandListShow" width="70%">
+            <el-table  
+            :data="commandList"
+            style="width: 100%">
+            <el-table-column
+                prop="title"
+                label="标题"
+                width="180">
+            </el-table-column>
+            <el-table-column
+                prop="command"
+                label="command"
+                width="180">
+            </el-table-column>
+            <el-table-column
+                prop="description"
+                label="简介">
+            </el-table-column>
+            <el-table-column label="操作" width="180" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" icon="el-icon-delete" class="red" @click="deleteCommand(scope.row.deviceId,scope.row.id)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="commandListShow = false">确 定</el-button>
+            </span>
+         </el-dialog>
+    </div>
+</template>
+
+<script>
+    import {getDevicePage,createDevice,updateDevice,deleteDevice,cloneDevice,addDeviceCommand,getDeviceCommandPage,deleteDeviceParam} from '@/api/device'
+    import {timestampToTime} from '@/utils/toTimeStr'
+    export default {
+        name: 'basetable',
+        data() {
+            return {
+                url: './static/vuetable.json',
+                data:[],
+                tableData: [],
+                cur_page: 1,
+                multipleSelection: [],
+                select_cate: '',
+                del_list: [],
+                editVisible: false,
+                delVisible: false,
+                addVisible:false,
+                commandShow:false,
+                commandListShow:false,
+                form: {
+                    name: '',
+                    date: '',
+                    address: ''
+                },
+                addCommand:{
+                    title:'',
+                    command:'',
+                    description:''
+                },
+                commandList:[
+                    {
+                        title:'',
+                        command:'',
+                        description:''
+                    }
+                ],
+                addForm:{
+                    name:'',
+                    password:''
+                },
+                idx: -1,
+                pageCount:0
+            }
+        },
+        created() {
+            this.getDevicePage(1)
+        },
+        methods: {
+            //新建设备
+            addDevice(){
+                this.addVisible = true;
+            },
+            //获取设备
+            getDevicePage(count=1){
+                getDevicePage(count)
+                .then(res=>{
+                    if(res.code==200&&res.result!=false){
+                        this.pageCount= res.result.totalPageNo*10
+                        this.setData(res.result.data)
+                    }
+                })
+            },
+            saveAdd(){
+                createDevice(this.addForm.name,this.addForm.password)
+                .then(res=>{
+                    console.log(res)
+                    if(res.code==200){
+                         this.$message.success(`保存成功`);
+                         this.getDevicePage(this.cur_page)
+                    }else{
+                        this.$message.error(`修改失败`);
+                    }
+                })
+                this.addVisible = false;
+            },
+            saveCommand(){
+                addDeviceCommand(this.form,this.addCommand)
+                .then(res=>{
+                    console.log(res)
+                    if(res.code==200){
+                         this.$message.success(`添加预设成功`);
+                    }else{
+                        this.$message.error(`quq失败`);
+                    }
+                })
+                this.commandShow = false;
+            },
+            deleteCommand(deviceId,id){
+                deleteDeviceParam(deviceId,id)
+                .then(res=>{
+                    console.log(res)
+                    if(res.code==200&&res.result==true){
+                        this.$message.success(`删除成功`);
+                        for(var i = 0; i < this.commandList.length ; i++){
+                            if(this.commandList[i].id==id){
+                                this.commandList.splice(i,1)
+                            }
+                        }   
+                    }else{
+                        this.$message.error('删除失败')
+                    }
+                })
+            },
+            //设置dATA
+            setData(arr){
+                for(let i = 0 ; i < arr.length ; i++){
+                    arr[i].date = timestampToTime(arr[i].gmtCreate)
+                    arr[i].update = timestampToTime(arr[i].gmtUpdate)
+                }
+                 this.data=arr
+            },
+            // 分页导航
+            handleCurrentChange(val) {
+                this.cur_page = val;
+                this.getDevicePage(val)
+            },
+            formatter(row, column) {
+                return row.address;
+            },
+            filterTag(value, row) {
+                return row.tag === value;
+            },
+            handleEdit(index, row) {
+                this.handleFrom(index,row)
+                this.editVisible = true;
+            },
+            handleDelete(index, row) {
+                this.handleFrom(index,row)
+                
+                this.delVisible = true
+            },
+            handleCopy(index,row){
+                this.handleFrom(index,row)
+                cloneDevice(this.form)
+                .then(res=>{
+                    if(res.code==200){
+                        this.$message.success(`克隆成功，刷新查看哦。`);
+                    }else{
+                        this.$message.error(`克隆失败`);
+                    }
+                })
+            },
+            handleAdd(index,row){
+                this.handleFrom(index,row)
+                this.commandShow = true
+            },
+            lookCommand(index,row){
+                this.handleFrom(index,row)
+                getDeviceCommandPage(1,this.form)
+                .then(res=>{
+                    console.log(res)
+                    if(res.code==200&&res.result!=false){
+                        this.commandList = res.result.data
+                    }
+                })
+                this.commandListShow = true
+            },
+            //把当前一条的数据赋予给form.
+            handleFrom(index,row){
+                this.idx = index;
+                const item = this.data[index];
+                this.form = {
+                    name: item.name,
+                    id:item.id,
+                    secretKey: item.secretKey,
+                    password: item.password,
+                    title:item.title,
+                    description:item.description
+                }
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            // 保存编辑
+            saveEdit() {
+                updateDevice(this.form)
+                .then(res=>{
+                    if(res.code==200&&res.result!=false){
+                        this.$message.success(`修改第 ${this.idx+1} 行成功`);
+                    }else{
+                        this.$message.error(`失败了呢`);
+                    }
+                })
+                this.editVisible = false;
+                
+            },
+            // 确定删除
+            deleteRow(){
+                deleteDevice(this.form)
+                .then(res=>{
+                    if(res.code==200&&res.result!=false){
+                        this.$message.success(`删除成功`);
+                        console.log(res)
+                         this.getDevicePage(this.cur_page)
+                    }else{
+                        this.$message.error(`失败了呢`);
+                    }
+                })
+                this.delVisible = false;
+            }
+        }
+    }
+
+</script>
+
+<style scoped>
+    .handle-box {
+        margin-bottom: 20px;
+    }
+
+    .handle-select {
+        width: 120px;
+    }
+
+    .handle-input {
+        width: 300px;
+        display: inline-block;
+    }
+    .del-dialog-cnt{
+        font-size: 16px;
+        text-align: center
+    }
+    .table{
+        width: 100%;
+        font-size: 14px;
+    }
+    .red{
+        color: #ff0000;
+    }
+</style>
