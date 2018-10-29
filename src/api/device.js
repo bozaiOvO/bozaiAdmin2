@@ -1,8 +1,9 @@
 import request from './request'
+let serverUrl = 'https://gw.iotechn.com/m.api/'  //开发环境
 //获取用户创建的设备 
 export function getDevicePage(page){
   return request({
-    url:'/api',
+    url:serverUrl,
     method:'get',
     params:{
       _gp:'device',
@@ -14,7 +15,7 @@ export function getDevicePage(page){
 //新创设备
 export function createDevice(name,password){
   return request({
-    url:'/api',
+    url:'/serverUrl',
     method:'get',
     params:{
       _gp:'device',
@@ -27,7 +28,7 @@ export function createDevice(name,password){
 //更新设备
 export function updateDevice(form){
   return request({
-    url:'/api',
+    url:serverUrl,
     method:'get',
     params:{
       _gp:'device',
@@ -43,7 +44,7 @@ export function updateDevice(form){
 //删除设备
 export function deleteDevice(form){
   return request({
-    url:'/api',
+    url:serverUrl,
     method:'get',
     params:{
       _gp:'device',
@@ -56,7 +57,7 @@ export function deleteDevice(form){
 //克隆设备
 export function cloneDevice(form){
   return request({
-    url:'/api',
+    url:serverUrl,
     method:'get',
     params:{
       _gp:'device',
@@ -69,7 +70,7 @@ export function cloneDevice(form){
 //首页使用。获取设备数量以及在线数量。
 export function getDeviceBasicInfo(){
   return request({
-    url:"/api",
+    url:serverUrl,
     method:'get',
     params:{
       _gp:'device',
@@ -80,7 +81,7 @@ export function getDeviceBasicInfo(){
 //
 export function addDeviceCommand(form,addCommand){
   return request({
-    url:"/api",
+    url:serverUrl,
     method:'get',
     params:{
       _gp:'device',
@@ -95,7 +96,7 @@ export function addDeviceCommand(form,addCommand){
 }
 export function getDeviceCommandPage(page,form){
   return request({
-    url:"/api",
+    url:serverUrl,
     method:'get',
     params:{
       _gp:"device",
@@ -107,7 +108,7 @@ export function getDeviceCommandPage(page,form){
 }
 export function deleteDeviceParam(deviceId,commandId){
   return request({
-    url:'/api',
+    url:serverUrl,
     method:"get",
     params:{
       _gp:"device",
@@ -117,4 +118,19 @@ export function deleteDeviceParam(deviceId,commandId){
     }
   })
 
+}
+export function addDeviceParam(deviceId,form){
+  return request({
+    url:serverUrl,
+    method:'get',
+    params:{
+      _gp:'device',
+      _mt:'addDeviceParam',
+      deviceId,
+      title:form.title,
+      name:form.name,
+      expire:form.expire,
+      description:form.description
+    }
+  })
 }

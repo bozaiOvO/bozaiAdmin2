@@ -40,12 +40,9 @@
         },
         methods:{
             getMsg(){
-                console.log(getToken())
                 getMsg('user','countUserUnreadMsg')
                 .then(res=>{
-                    console.log(res)
                     if(res.code==200){
-                        console.log('fff')
                         this.setMsgCount(res.result)
                     }
                     if(res.code==10006){

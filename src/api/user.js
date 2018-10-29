@@ -1,8 +1,9 @@
 import request from './request'
+let serverUrl = 'https://gw.iotechn.com/m.api/'  //开发环境
 //注册接口
 export function yzm(phone){
     return request({
-        url:'/api',
+        url:serverUrl,
         params:{ 
             _gp:'user',
             _mt:'sendVerifyCode', 
@@ -12,7 +13,7 @@ export function yzm(phone){
 } 
 export function register(phone,password,verifyCode){
     return request({
-        url:'/api',
+        url:serverUrl,
         method: 'get', 
         params:{
             _gp:'user',
@@ -25,7 +26,7 @@ export function register(phone,password,verifyCode){
 }
 export function login(phone,password){
     return request({
-        url:'/api',
+        url:serverUrl,
         params:{
             _gp:'user',
             _mt:'login',
@@ -36,7 +37,7 @@ export function login(phone,password){
 }
 export function getMsg(_gp,_mt){
    return request({
-        url:'/api',
+        url:serverUrl,
         method:'get',
         params:{
             _gp,
@@ -46,7 +47,7 @@ export function getMsg(_gp,_mt){
 }
 export function getMsgDesc(page){
     return request({
-        url:'/api',
+        url:serverUrl,
         method:'get',
         params:{
             _gp:'user',
@@ -57,7 +58,7 @@ export function getMsgDesc(page){
 }
 export function readMsg(notifyIds){
     return request({
-        url:'/api',
+        url:serverUrl,
         method:'get',
         params:{
             _gp:'user',

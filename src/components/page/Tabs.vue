@@ -108,10 +108,8 @@
         },
         methods: {
             handleRead(id) {
-                console.log(id)
                 readMsg(id)
                 .then(res=>{
-                    console.log(res)
                 })
             },
             handleDel(index) {
@@ -125,7 +123,6 @@
             getMsgDesc(page){
                 getMsgDesc(page)
                 .then(res=>{
-                    console.log(res)
                     
                     this.setUnread(res.result.data)
                 })

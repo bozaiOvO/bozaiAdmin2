@@ -42,7 +42,7 @@
                     <el-input v-model="form.description"></el-input>
                 </el-form-item>
                 <el-form-item label="内容">
-                    <el-input type="textarea"  v-model="form.content"></el-input>
+                    <el-input type="textarea"  v-model="form.content"  rows=5></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -73,7 +73,10 @@
 
 <script>
     import {getExecutors,addClass,reloadClass,getExecutorContent} from '@/api/executor'
+    import axios from 'axios'
     import {timestampToTime} from '@/utils/toTimeStr'
+    import Qs from 'qs'
+    let serverUrl = 'https://gw.iotechn.com/m.api/'  //开发环境
     export default {
         name: 'basetable',
         data() {
@@ -119,7 +122,6 @@
             getExecutor(page=1){
                 getExecutors(page)
                 .then(res=>{
-                    console.log(res)
                     if(res.code==200){
                         this.setData(res.result.data)
                         this.pageCount = res.result.totalPageNo*10
@@ -135,7 +137,6 @@
                this.reloadObj = obj
                getExecutorContent(obj.uuid)
                .then(res=>{
-                   console.log(res)
                    if(res.code===200&&res.result!=false){
                        this.reloadObj.content =res.result
                         this.editVisible = true
@@ -145,15 +146,31 @@
             },
             // 保存编辑
             saveEdit() {
-                reloadClass(this.reloadObj.uuid,this.reloadObj.content,this.reloadObj.title,this.reloadObj.description)
-                .then(res=>{
-                    console.log(res)
+                var data =  Qs.stringify({
+                        _gp:'executor',
+                        _mt:'reloadClass',
+                        uuid:this.reloadObj.uuid,
+                        content:this.reloadObj.content
+                });
+                axios({
+                        url: serverUrl,
+                        method: 'post',
+                        headers: {
+                        'Content-Type':'application/x-www-form-urlencoded'
+                    },
+                    data
                 })
+                    .then(res=>{
+                        if(res.data.code!=200){
+                            this.$message.error(res.data.msg)
+                        }else{
+                            this.$message.success('ok啦')
+                        }
+                    })
             },
             addExecutor(){
                 addClass(this.form.content,this.form.title,this.form.description)
                 .then(res=>{
-                    console.log(res)
                     if(res.code==200){
                          this.$message.success(`成功啦`);
                     }else{
@@ -187,5 +204,8 @@
     }
     .red{
         color: #ff0000;
+    }
+    .content-input{
+        height: 600px;
     }
 </style>

@@ -1,7 +1,8 @@
 import request from './request'
+let serverUrl = 'https://gw.iotechn.com/m.api/'  //开发环境
 export function getExecutors(page){
   return request({
-    url:'/api',
+    url:serverUrl,
     method:'get',
     params:{
       _gp:'executor',
@@ -12,7 +13,7 @@ export function getExecutors(page){
 }
 export function addClass(content,title,description){
   return request({
-    url:'api',
+    url:serverUrl,
     method:'get',
     params:{
       _gp:'executor',
@@ -25,9 +26,9 @@ export function addClass(content,title,description){
 }
 export function reloadClass(uuid,content,title,description){
   return request({
-    url:'api',
-    method:'get',
-    params:{
+    url:serverUrl,
+    method:'post',
+    data:{
       _gp:'executor',
       _mt:'reloadClass',
       uuid,
@@ -39,7 +40,7 @@ export function reloadClass(uuid,content,title,description){
 }
 export function getExecutorContent(uuid){
   return request({
-    url:'api',
+    url:serverUrl,
     method:'get',
     params:{
       _gp:'executor',

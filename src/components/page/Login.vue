@@ -31,8 +31,8 @@
         data: function(){
             return {
                 ruleForm: {
-                    username: '18537870565',
-                    password: 'ljb961026'
+                    username: '',
+                    password: ''
                 },
                 rules: {
                     username: [
@@ -48,7 +48,6 @@
             submitForm() {
                 login(this.ruleForm.username,this.ruleForm.password)
                 .then(res=>{
-                    console.log(res)
                     if(res.msg){
                         this.$message.error(res.msg);
                     }

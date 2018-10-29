@@ -32,6 +32,7 @@
                         <el-button type="text"  @click="handleCopy(scope.$index, scope.row)"> <i class="el-icon-lx-copy"></i> 克隆</el-button>
                         <el-button type="text"  @click="handleAdd(scope.$index, scope.row)"> <i class="el-icon-lx-add"></i> 添加预设</el-button>
                         <el-button type="text"  @click="lookCommand(scope.$index, scope.row)"> <i class="el-icon-lx-attention"></i> 查看预设</el-button>
+                        <el-button type="text"  @click="handleAddDev(scope.$index, scope.row)"> <i class="el-icon-lx-roundadd"></i> 添加设备参数</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -133,17 +134,51 @@
                 <el-button @click="commandListShow = false">确 定</el-button>
             </span>
          </el-dialog>
+         <!-- 添加设备参数 -->
+         <el-dialog title="添加设备参数 " :visible.sync="addDevShow" width="70%">
+            <el-form ref="addDevForm" :model="addDevForm" label-width="90px" :rules="rules">
+                <el-form-item label="标题" prop="title">
+                    <el-input v-model="addDevForm.title"></el-input>
+                </el-form-item>
+                <el-form-item label="name" prop="name">
+                    <el-input v-model="addDevForm.name" placeholder='只允许输入英文'></el-input>
+                </el-form-item>
+                <el-form-item label="过期时间" prop="expire">
+                    <el-input v-model.number="addDevForm.expire" placeholder='只允许输入数字（单位秒）'></el-input>
+                </el-form-item>
+                <el-form-item label="简介">
+                    <el-input v-model="addDevForm.description" placeholder='选填'></el-input>
+                </el-form-item>
+            </el-form>
+           <span slot="footer" class="dialog-footer">
+                <el-button @click="addDevShow = false">取 消</el-button>
+                <el-button type="primary" @click="saveAddForm">确 定</el-button>
+            </span>
+         </el-dialog>
     </div>
 </template>
 
 <script>
-    import {getDevicePage,createDevice,updateDevice,deleteDevice,cloneDevice,addDeviceCommand,getDeviceCommandPage,deleteDeviceParam} from '@/api/device'
+    import {getDevicePage,createDevice,updateDevice,deleteDevice,cloneDevice,addDeviceCommand,getDeviceCommandPage,deleteDeviceParam,addDeviceParam} from '@/api/device'
     import {timestampToTime} from '@/utils/toTimeStr'
     export default {
         name: 'basetable',
         data() {
+            //只可以输入英文
+            var enReg = /^[A-Za-z]+$/
+               var validateEn= (rule, value, callback) => {
+                    if (!value) {
+                         callback(new Error('不可以为空哦!!'))
+                    }
+                    setTimeout(() => {
+                        if (!enReg.test(value)) {
+                            callback(new Error('格式有误'))
+                        } else {
+                            callback()
+                        }
+                    }, 1000)
+                }
             return {
-                url: './static/vuetable.json',
                 data:[],
                 tableData: [],
                 cur_page: 1,
@@ -155,10 +190,19 @@
                 addVisible:false,
                 commandShow:false,
                 commandListShow:false,
+                addDevShow:false,
+                
                 form: {
                     name: '',
                     date: '',
                     address: ''
+                },
+                rules: {
+                    // 校验英文，主要通过validator来指定验证器名称
+                    name: [{validator: validateEn ,trigger: 'blur',required: true}],
+                    expire:[{ required: true, message: '必填项'},
+                        { type: 'number', message: '格式有误'}],
+                    title:[{required:true,message:'必填项'}]
                 },
                 addCommand:{
                     title:'',
@@ -172,6 +216,12 @@
                         description:''
                     }
                 ],
+                addDevForm:{
+                    title:"",
+                    name:"",
+                    expire:'',
+                    description:""
+                },
                 addForm:{
                     name:'',
                     password:''
@@ -201,10 +251,10 @@
             saveAdd(){
                 createDevice(this.addForm.name,this.addForm.password)
                 .then(res=>{
-                    console.log(res)
                     if(res.code==200){
                          this.$message.success(`保存成功`);
                          this.getDevicePage(this.cur_page)
+                         this.$router.go(0)
                     }else{
                         this.$message.error(`修改失败`);
                     }
@@ -214,7 +264,6 @@
             saveCommand(){
                 addDeviceCommand(this.form,this.addCommand)
                 .then(res=>{
-                    console.log(res)
                     if(res.code==200){
                          this.$message.success(`添加预设成功`);
                     }else{
@@ -226,7 +275,6 @@
             deleteCommand(deviceId,id){
                 deleteDeviceParam(deviceId,id)
                 .then(res=>{
-                    console.log(res)
                     if(res.code==200&&res.result==true){
                         this.$message.success(`删除成功`);
                         for(var i = 0; i < this.commandList.length ; i++){
@@ -272,7 +320,7 @@
                 cloneDevice(this.form)
                 .then(res=>{
                     if(res.code==200){
-                        this.$message.success(`克隆成功，刷新查看哦。`);
+                        this.$message.success(`克隆成功`);
                     }else{
                         this.$message.error(`克隆失败`);
                     }
@@ -286,12 +334,15 @@
                 this.handleFrom(index,row)
                 getDeviceCommandPage(1,this.form)
                 .then(res=>{
-                    console.log(res)
                     if(res.code==200&&res.result!=false){
                         this.commandList = res.result.data
                     }
                 })
                 this.commandListShow = true
+            },
+            handleAddDev(index,row){
+                this.handleFrom(index,row)
+                 this.addDevShow = true
             },
             //把当前一条的数据赋予给form.
             handleFrom(index,row){
@@ -328,13 +379,23 @@
                 .then(res=>{
                     if(res.code==200&&res.result!=false){
                         this.$message.success(`删除成功`);
-                        console.log(res)
                          this.getDevicePage(this.cur_page)
                     }else{
                         this.$message.error(`失败了呢`);
                     }
                 })
                 this.delVisible = false;
+            },
+            saveAddForm(){
+                addDeviceParam(this.form.id,this.addDevForm)
+                .then(res=>{
+                    if(res.code===200){
+                        this.$message.success('添加成功')
+                    }else{
+                        this.$message.error(res.msg)
+                    }
+                })
+                this.addDevShow = false;
             }
         }
     }

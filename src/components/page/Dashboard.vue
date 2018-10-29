@@ -19,7 +19,6 @@
         created(){
             getDeviceBasicInfo()
             .then(res=>{
-                console.log(res)
                 if(res.code==200&&res.result!=false){
                     this.count = res.result.count
                     this.onlineCount = res.result.onlineCount

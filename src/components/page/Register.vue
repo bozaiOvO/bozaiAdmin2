@@ -47,13 +47,21 @@ export default {
         sendYzm(){
             yzm(this.phone)
             .then(res=>{
-                console.log(res)
+                
+                if(res.code!==200){
+                    if(res.code===40006){
+                        this.$message.error(res.msg+'3秒后跳转登陆页');
+                        setTimeout(()=>{
+                            this.$router.push('/login')
+                        },3000)
+                    }
+                    this.$message.error(res.msg)
+                }
             })
         },
         register(){
             register(this.phone,this.password,this.yzm)
             .then(res=>{
-                console.log(res)
                 if(res.code===200){
                      if(res.code==200&&res.result){
                          setToken(res.result)
