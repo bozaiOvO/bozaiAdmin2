@@ -10,12 +10,16 @@
                         <router-view></router-view>
                     </keep-alive>
                 </transition>
+               
             </div>
+
         </div>
+         
     </div>
 </template>
 
 <script>
+    import VueQr from 'vue-qr'
     import vHead from './Header.vue';
     import vSidebar from './Sidebar.vue';
     import vTags from './Tags.vue';
@@ -27,7 +31,12 @@
         data(){
             return {
                 tagsList: [],
-                collapse: false
+                collapse: false,
+                config: {
+                    value: 'https://www.baidu.com',//显示的值、跳转的地址
+                    logo:require('../../assets/logo.png')//中间logo的地址
+                }
+                
             }
         },
          mounted(){

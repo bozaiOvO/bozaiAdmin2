@@ -32,7 +32,8 @@
                         <el-button type="text"  @click="handleCopy(scope.$index, scope.row)"> <i class="el-icon-lx-copy"></i> 克隆</el-button>
                         <el-button type="text"  @click="handleAdd(scope.$index, scope.row)"> <i class="el-icon-lx-add"></i> 添加预设</el-button>
                         <el-button type="text"  @click="lookCommand(scope.$index, scope.row)"> <i class="el-icon-lx-attention"></i> 查看预设</el-button>
-                        <el-button type="text"  @click="handleAddDev(scope.$index, scope.row)"> <i class="el-icon-lx-roundadd"></i> 添加设备参数</el-button>
+                        <el-button type="text"  @click="handleAddDev(scope.$index, scope.row)"> <i class="el-icon-lx-roundadd"></i>添加参数</el-button>
+                        <el-button type="text"  @click="handleTwo(scope.$index, scope.row)"> <i class="el-icon-lx-roundadd"></i>二维码</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -155,14 +156,25 @@
                 <el-button type="primary" @click="saveAddForm">确 定</el-button>
             </span>
          </el-dialog>
+         <el-dialog  title="二维码 " :visible.sync="TwoConfig.isShow" width="40%" class='qr-box'>
+             <vue-qr  :logoSrc="TwoConfig.logo" :text="TwoConfig.value" :size="200" :margin="0" v-show='TwoConfig.isShow' class="qr-c"></vue-qr>
+             <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="TwoConfig.isShow=false">确 定</el-button>
+            </span>
+         </el-dialog>
+         
     </div>
 </template>
 
 <script>
     import {getDevicePage,createDevice,updateDevice,deleteDevice,cloneDevice,addDeviceCommand,getDeviceCommandPage,deleteDeviceParam,addDeviceParam} from '@/api/device'
+    import VueQr from 'vue-qr'
     import {timestampToTime} from '@/utils/toTimeStr'
     export default {
         name: 'basetable',
+        components:{
+            VueQr
+        },
         data() {
             //只可以输入英文
             var enReg = /^[A-Za-z]+$/
@@ -225,6 +237,12 @@
                 addForm:{
                     name:'',
                     password:''
+                },
+                //二维码
+                TwoConfig: {
+                    value: 'key获取失败了呢。',//显示的值、跳转的地址
+                    logo:require('../../assets/logo.jpg'),//中间logo的地址
+                    isShow:false
                 },
                 idx: -1,
                 pageCount:0
@@ -344,6 +362,10 @@
                 this.handleFrom(index,row)
                  this.addDevShow = true
             },
+            handleTwo(index,row){
+                this.TwoConfig.value = this.data[index].secretKey
+                this.TwoConfig.isShow=true
+            },
             //把当前一条的数据赋予给form.
             handleFrom(index,row){
                 this.idx = index;
@@ -425,5 +447,8 @@
     }
     .red{
         color: #ff0000;
+    }
+    .qr-c{
+        text-align: center
     }
 </style>
