@@ -7,7 +7,7 @@ export default new Router({
     routes: [
         {
             path: '/',
-            redirect: '/dashboard',
+            redirect: '/device',
             meta:{requiresAuth: true}
         },
         {

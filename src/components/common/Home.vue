@@ -32,10 +32,6 @@
             return {
                 tagsList: [],
                 collapse: false,
-                config: {
-                    value: 'https://www.baidu.com',//显示的值、跳转的地址
-                    logo:require('../../assets/logo.png')//中间logo的地址
-                }
                 
             }
         },
@@ -83,3 +79,4 @@
         }
     }
 </script>
+

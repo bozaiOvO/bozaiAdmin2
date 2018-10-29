@@ -1,5 +1,5 @@
 import request from './request'
-let serverUrl = 'https://gw.iotechn.com/m.api/'  //开发环境
+let serverUrl = 'https://gw.iotechn.com/m.api/'  
 //注册接口
 export function yzm(phone){
     return request({

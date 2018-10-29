@@ -1,5 +1,5 @@
 import request from './request'
-let serverUrl = 'https://gw.iotechn.com/m.api/'  //开发环境
+let serverUrl = 'https://gw.iotechn.com/m.api/'  //
 //获取用户创建的设备 
 export function getDevicePage(page){
   return request({

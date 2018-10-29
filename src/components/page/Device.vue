@@ -2,7 +2,8 @@
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 设备表格</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 设备表格，您的设备有{{count}}，
+        您的在线设备有{{onlineCount}}！</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -205,7 +206,7 @@
 </template>
 
 <script>
-    import {getDevicePage,createDevice,updateDevice,deleteDevice,cloneDevice,addDeviceCommand,getDeviceCommandPage,deleteDeviceCommand,addDeviceParam,deleteDeviceParam,getDeviceParamPage} from '@/api/device'
+    import {getDeviceBasicInfo,getDevicePage,createDevice,updateDevice,deleteDevice,cloneDevice,addDeviceCommand,getDeviceCommandPage,deleteDeviceCommand,addDeviceParam,deleteDeviceParam,getDeviceParamPage} from '@/api/device'
     import VueQr from 'vue-qr'
     import {timestampToTime} from '@/utils/toTimeStr'
     export default {
@@ -294,11 +295,22 @@
                 yuShePageCount:0,
                 yuSheCurrentCount:0,
                 canShuPageCount:0,
-                canshuCurrentCount:0
+                canshuCurrentCount:0,
+                //这个是设备数字
+                count:0,
+                onlineCount:0
             }
         },
         created() {
             this.getDevicePage(1)
+            getDeviceBasicInfo()
+            .then(res=>{
+                if(res.code==200&&res.result!=false){
+                    this.count = res.result.count
+                    this.onlineCount = res.result.onlineCount
+                }
+            })
+        
         },
         methods: {
             //新建设备

@@ -31,6 +31,12 @@
 
 
 <style scoped>
+    .welcome{
+        margin: 0;
+        
+        height: 100%;
+        background:url('../../assets/login-bg.jpg') no-repeat left;
+    }
     .el-row {
         margin-bottom: 20px;
     }
