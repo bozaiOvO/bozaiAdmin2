@@ -33,6 +33,7 @@
                         <el-button type="text"  @click="handleAdd(scope.$index, scope.row)"> <i class="el-icon-lx-add"></i> 添加预设</el-button>
                         <el-button type="text"  @click="lookCommand(scope.$index, scope.row)"> <i class="el-icon-lx-attention"></i> 查看预设</el-button>
                         <el-button type="text"  @click="handleAddDev(scope.$index, scope.row)"> <i class="el-icon-lx-roundadd"></i>添加参数</el-button>
+                        <el-button type="text"  @click="lookDev(scope.$index, scope.row)"> <i class="el-icon-lx-attention"></i>查看参数</el-button>
                         <el-button type="text"  @click="handleTwo(scope.$index, scope.row)"> <i class="el-icon-lx-roundadd"></i>二维码</el-button>
                     </template>
                 </el-table-column>
@@ -131,6 +132,10 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <div class="pagination">
+                <el-pagination background @current-change="yuSheChange" layout="prev, pager, next" :total=yuShePageCount>
+                </el-pagination>
+            </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="commandListShow = false">确 定</el-button>
             </span>
@@ -156,6 +161,39 @@
                 <el-button type="primary" @click="saveAddForm">确 定</el-button>
             </span>
          </el-dialog>
+         <!-- 查看设备参数 -->
+         <el-dialog title="查看预设" :visible.sync="devListShow" width="70%">
+            <el-table  
+            :data="devList"
+            style="width: 100%">
+            <el-table-column
+                prop="id"
+                label="id"
+                width="180">
+            </el-table-column>
+            <el-table-column
+                prop="name"
+                label="name"
+                width="180">
+            </el-table-column>
+            <el-table-column
+                prop="description"
+                label="简介">
+            </el-table-column>
+            <el-table-column label="操作" width="180" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" icon="el-icon-delete" class="red" @click="deleteDev(scope.row.deviceId,scope.row.id)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination background @current-change="canShuChange" layout="prev, pager, next" :total=canShuPageCount>
+                </el-pagination>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="commandListShow = false">确 定</el-button>
+            </span>
+         </el-dialog>
          <el-dialog  title="二维码 " :visible.sync="TwoConfig.isShow" width="40%" class='qr-box'>
              <vue-qr  :logoSrc="TwoConfig.logo" :text="TwoConfig.value" :size="200" :margin="0" v-show='TwoConfig.isShow' class="qr-c"></vue-qr>
              <span slot="footer" class="dialog-footer">
@@ -167,7 +205,7 @@
 </template>
 
 <script>
-    import {getDevicePage,createDevice,updateDevice,deleteDevice,cloneDevice,addDeviceCommand,getDeviceCommandPage,deleteDeviceParam,addDeviceParam} from '@/api/device'
+    import {getDevicePage,createDevice,updateDevice,deleteDevice,cloneDevice,addDeviceCommand,getDeviceCommandPage,deleteDeviceCommand,addDeviceParam,deleteDeviceParam,getDeviceParamPage} from '@/api/device'
     import VueQr from 'vue-qr'
     import {timestampToTime} from '@/utils/toTimeStr'
     export default {
@@ -203,7 +241,14 @@
                 commandShow:false,
                 commandListShow:false,
                 addDevShow:false,
-                
+                devListShow:false,
+                devList:[
+                    {
+                        id:'',
+                        name:'',
+                        description:''
+                    }
+                ],
                 form: {
                     name: '',
                     date: '',
@@ -245,7 +290,11 @@
                     isShow:false
                 },
                 idx: -1,
-                pageCount:0
+                pageCount:0,
+                yuShePageCount:0,
+                yuSheCurrentCount:0,
+                canShuPageCount:0,
+                canshuCurrentCount:0
             }
         },
         created() {
@@ -263,6 +312,26 @@
                     if(res.code==200&&res.result!=false){
                         this.pageCount= res.result.totalPageNo*10
                         this.setData(res.result.data)
+                    }
+                })
+            },
+            //获取预设参数
+            getDeviceCommandPage(page){
+                getDeviceCommandPage(page,this.form)
+                .then(res=>{
+                    if(res.code==200&&res.result!=false){
+                        this.commandList = res.result.data
+                        this.yuShePageCount = res.result.totalPageNo*10
+                    }
+                })
+            },
+            //获取设备参数
+            getDeviceParamPage(page){
+                getDeviceParamPage(page,this.form.id)
+                .then(res=>{
+                    if(res.code==200&&res.result!=false){
+                        this.devList = res.result.data
+                        this.canShuPageCount = res.result.totalPageNo*10
                     }
                 })
             },
@@ -291,13 +360,29 @@
                 this.commandShow = false;
             },
             deleteCommand(deviceId,id){
-                deleteDeviceParam(deviceId,id)
+                deleteDeviceCommand(deviceId,id)
                 .then(res=>{
                     if(res.code==200&&res.result==true){
                         this.$message.success(`删除成功`);
                         for(var i = 0; i < this.commandList.length ; i++){
                             if(this.commandList[i].id==id){
                                 this.commandList.splice(i,1)
+                            }
+                        }   
+                    }else{
+                        this.$message.error('删除失败')
+                    }
+                })
+            },
+            //删除参数
+            deleteDev(deviceId,id){
+                deleteDeviceParam(deviceId,id)
+                .then(res=>{
+                    if(res.code==200&&res.result==true){
+                        this.$message.success(`删除成功`);
+                        for(var i = 0; i < this.devList.length ; i++){
+                            if(this.devList[i].id==id){
+                                this.devList.splice(i,1)
                             }
                         }   
                     }else{
@@ -317,6 +402,16 @@
             handleCurrentChange(val) {
                 this.cur_page = val;
                 this.getDevicePage(val)
+            },
+            //查看预设的
+            yuSheChange(val){
+                this.yuSheCurrentCount = val;
+                this.getDeviceCommandPage(val)
+            },
+            //查看参数
+            canShuChange(val){
+                this.canshuCurrentCount = val;
+                this.getDeviceParamPage(val)
             },
             formatter(row, column) {
                 return row.address;
@@ -350,13 +445,13 @@
             },
             lookCommand(index,row){
                 this.handleFrom(index,row)
-                getDeviceCommandPage(1,this.form)
-                .then(res=>{
-                    if(res.code==200&&res.result!=false){
-                        this.commandList = res.result.data
-                    }
-                })
+                this.getDeviceCommandPage(1)
                 this.commandListShow = true
+            },
+            lookDev(index,row){
+                this.handleFrom(index,row)
+                this.getDeviceParamPage(1)
+                this.devListShow = true
             },
             handleAddDev(index,row){
                 this.handleFrom(index,row)

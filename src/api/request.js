@@ -91,10 +91,7 @@ service.interceptors.response.use(
   })
 function http(config){
   if(config.method.toLowerCase() === 'post'){
-    console.log('这是一个post')
-    console.log(qs)
     config.data = qs.stringify(config.data,{arrayFormat: 'repeat',allowDots: true});
-    console.log(config.data)
   }else{
     config.params = config.data;
   }

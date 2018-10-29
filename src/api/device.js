@@ -106,7 +106,7 @@ export function getDeviceCommandPage(page,form){
     }
   })
 }
-export function deleteDeviceParam(deviceId,commandId){
+export function deleteDeviceCommand(deviceId,commandId){
   return request({
     url:serverUrl,
     method:"post",
@@ -131,6 +131,30 @@ export function addDeviceParam(deviceId,form){
       name:form.name,
       expire:form.expire,
       description:form.description
+    }
+  })
+}
+export function deleteDeviceParam(deviceId,paramId){
+  return request({
+    url:serverUrl,
+    method:'post',
+    data:{
+      _gp:'device',
+      _mt:'deleteDeviceParam',
+      deviceId,
+      paramId
+    }
+  })
+}
+export function getDeviceParamPage(page,deviceId){
+  return request({
+    url:serverUrl,
+    method:'post',
+    data:{
+      _gp:'device',
+      _mt:'getDeviceParamPage',
+      page,
+      deviceId
     }
   })
 }
