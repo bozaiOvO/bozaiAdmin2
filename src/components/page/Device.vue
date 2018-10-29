@@ -338,12 +338,11 @@
             saveAdd(){
                 createDevice(this.addForm.name,this.addForm.password)
                 .then(res=>{
+                    console.log(res)
                     if(res.code==200){
                          this.$message.success(`保存成功`);
                          this.getDevicePage(this.cur_page)
                          this.$router.go(0)
-                    }else{
-                        this.$message.error(`修改失败`);
                     }
                 })
                 this.addVisible = false;
@@ -353,8 +352,6 @@
                 .then(res=>{
                     if(res.code==200){
                          this.$message.success(`添加预设成功`);
-                    }else{
-                        this.$message.error(`quq失败`);
                     }
                 })
                 this.commandShow = false;
@@ -369,8 +366,6 @@
                                 this.commandList.splice(i,1)
                             }
                         }   
-                    }else{
-                        this.$message.error('删除失败')
                     }
                 })
             },
@@ -385,8 +380,6 @@
                                 this.devList.splice(i,1)
                             }
                         }   
-                    }else{
-                        this.$message.error('删除失败')
                     }
                 })
             },
@@ -434,8 +427,6 @@
                 .then(res=>{
                     if(res.code==200){
                         this.$message.success(`克隆成功`);
-                    }else{
-                        this.$message.error(`克隆失败`);
                     }
                 })
             },
@@ -483,8 +474,6 @@
                 .then(res=>{
                     if(res.code==200&&res.result!=false){
                         this.$message.success(`修改第 ${this.idx+1} 行成功`);
-                    }else{
-                        this.$message.error(`失败了呢`);
                     }
                 })
                 this.editVisible = false;
@@ -497,8 +486,6 @@
                     if(res.code==200&&res.result!=false){
                         this.$message.success(`删除成功`);
                          this.getDevicePage(this.cur_page)
-                    }else{
-                        this.$message.error(`失败了呢`);
                     }
                 })
                 this.delVisible = false;
@@ -508,8 +495,6 @@
                 .then(res=>{
                     if(res.code===200){
                         this.$message.success('添加成功')
-                    }else{
-                        this.$message.error(res.msg)
                     }
                 })
                 this.addDevShow = false;

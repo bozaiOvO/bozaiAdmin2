@@ -173,8 +173,6 @@
                 .then(res=>{
                     if(res.code==200){
                          this.$message.success(`成功啦`);
-                    }else{
-                        this.$message.error('失败了')
                     }
                     this.addVisible=false
                 })

@@ -44,6 +44,14 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
+    if(res.code!==200||res.msg){
+      console.log('res.code进入这里')
+      Message({
+        message: res.msg,
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
     if (response.status !== 200) {
       Message({
         message: res.message,
@@ -68,13 +76,8 @@ service.interceptors.response.use(
           })
         })
       }
-      if(res.code!==200){
-        Message({
-          message: res.msg,
-          type: 'error',
-          duration: 5 * 1000
-        })
-      }
+      console.log(res.code)
+      
       return Promise.reject('error')
     } else {
       return response.data
