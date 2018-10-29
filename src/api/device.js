@@ -71,7 +71,7 @@ export function cloneDevice(form){
 export function getDeviceBasicInfo(){
   return request({
     url:'/api',
-    method:'get',
+    method:'post',
     data:{
       _gp:'device',
       _mt:'getDeviceBasicInfo'
@@ -82,7 +82,7 @@ export function getDeviceBasicInfo(){
 export function addDeviceCommand(form,addCommand){
   return request({
     url:'/api',
-    method:'get',
+    method:'post',
     data:{
       _gp:'device',
       _mt:'addDeviceCommand',
@@ -97,7 +97,7 @@ export function addDeviceCommand(form,addCommand){
 export function getDeviceCommandPage(page,form){
   return request({
     url:'/api',
-    method:'get',
+    method:'post',
     data:{
       _gp:"device",
       _mt:"getDeviceCommandPage",
@@ -109,7 +109,7 @@ export function getDeviceCommandPage(page,form){
 export function deleteDeviceParam(deviceId,commandId){
   return request({
     url:'/api',
-    method:"get",
+    method:"post",
     data:{
       _gp:"device",
       _mt:'deleteDeviceCommand',
@@ -122,7 +122,7 @@ export function deleteDeviceParam(deviceId,commandId){
 export function addDeviceParam(deviceId,form){
   return request({
     url:'/api',
-    method:'get',
+    method:'post',
     data:{
       _gp:'device',
       _mt:'addDeviceParam',

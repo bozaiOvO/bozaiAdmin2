@@ -3,7 +3,7 @@ let serverUrl = 'https://gw.iotechn.com/m.api/'  //开发环境
 export function getExecutors(page){
   return request({
     url:'/api',
-    method:'get',
+    method:'post',
     data:{
       _gp:'executor',
       _mt:'getExecutors',

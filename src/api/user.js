@@ -4,6 +4,7 @@ let serverUrl = 'https://gw.iotechn.com/m.api/'  //开发环境
 export function yzm(phone){
     return request({
         url:'/api',
+        method: 'post', 
         data:{ 
             _gp:'user',
             _mt:'sendVerifyCode', 
@@ -39,7 +40,7 @@ export function login(phone,password){
 export function getMsg(_gp,_mt){
    return request({
         url:'/api',
-        method:'get',
+        method:'post',
         data:{
             _gp,
             _mt
@@ -49,7 +50,7 @@ export function getMsg(_gp,_mt){
 export function getMsgDesc(page){
     return request({
         url:'/api',
-        method:'get',
+        method:'post',
         data:{
             _gp:'user',
             _mt:'getUserNotifyPage',
@@ -60,7 +61,7 @@ export function getMsgDesc(page){
 export function readMsg(notifyIds){
     return request({
         url:'/api',
-        method:'get',
+        method:'post',
         data:{
             _gp:'user',
             _mt:'markNotifyRead',
