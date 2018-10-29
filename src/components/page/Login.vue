@@ -48,11 +48,13 @@
             submitForm() {
                 login(this.ruleForm.username,this.ruleForm.password)
                 .then(res=>{
+                    console.log(res)
                     if(res.msg){
                         this.$message.error(res.msg);
                     }
                     if(res.code==200&&res.result){
                         setToken(res.result)
+                        console.log(res)
                          this.$router.push('/')
                         
                     }
